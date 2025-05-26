@@ -15,7 +15,7 @@ const stemmer = PorterStemmer;
 const wordnet = new WordNet();
 const inflector = new NounInflector();
 
-// predefined rensponses (varying)
+// Predefined responses
 const responses = {
   "name": [
     "Hi, my name is Viktoria Miliaraki.",
@@ -55,7 +55,6 @@ const responses = {
   ]
 };
 
-// some keywords for each category with weights
 const keywords = {
   name: {
     name: 2,
@@ -131,7 +130,7 @@ for (const category in keywords) {
   }
 }
 
-// get synonyms
+// Helper function to get synonyms (asynchronous)
 async function getSynonyms(word) {
   return new Promise((resolve) => {
       const commonFillerWords = new Set(['a', 'an', 'the', 'is', 'are', 'was', 'were', 'be', 'to', 'of', 'and', 'or', 'in', 'on', 'at', 'for', 'with', 'do', 'you', 'my', 'what', 'who', 'how']);
@@ -141,10 +140,11 @@ async function getSynonyms(word) {
           return;
       }
 
-      // plurar won't be recognized later
+      // --- NEW LOGIC: Singularize the word before lookup ---
       const singularWord = inflector.singularize(word);
+      // --- END NEW LOGIC ---
 
-      wordnet.lookup(singularWord, function(results) {
+      wordnet.lookup(singularWord, function(results) { // Use singularWord for lookup
           const syns = new Set();
           results.forEach(function(result) {
               result.synonyms.forEach(function(syn) {
@@ -156,25 +156,30 @@ async function getSynonyms(word) {
   });
 }
 
-async function getResponse(prompt) {
+async function getResponse(prompt) { // Make getResponse async
   const words = tokenizer.tokenize(prompt.toLowerCase());
 
-  let wordsToScore = [...words]; // start with the original words from the prompt
+  // --- Start: Synonym Logic Addition ---
+  let wordsToScore = [...words]; // Start with the original words from the prompt
 
+  // Iterate through original words to find and add their stemmed synonyms
   for (const word of words) {
-      const synonyms = await getSynonyms(word);
+      const synonyms = await getSynonyms(word); // Await the asynchronous synonym lookup
       synonyms.forEach(syn => wordsToScore.push(syn));
   }
 
-  // stem all collected words (original + synonyms)
+  // Now, stem all collected words (original + synonyms)
   const stemmedWords = wordsToScore.map(word => stemmer.stem(word));
-  //console.log(stemmedWords)
+  console.log(stemmedWords)
+  // --- End: Synonym Logic Addition ---
+
 
   const categoryScores = {};
   let highestScore = 0;
 
   for (const category in stemmedKeys) {
     let score = 0;
+    // Use the expanded and stemmed list for scoring
     for (const word of stemmedWords) {
       if (stemmedKeys[category][word]) {
         score += stemmedKeys[category][word];
@@ -205,13 +210,13 @@ async function getResponse(prompt) {
   return ["Sorry, I'm only trained to answer questions about Vicky's resume."];
 }
 
-app.post('/chat', async (req, res) => {
+app.post('/chat', async (req, res) => { // Make this async as getResponse is now async
   const { prompt } = req.body;
   if (!prompt) {
     return res.status(400).json({ error: "Prompt is required" });
   }
 
-  const response = await getResponse(prompt);
+  const response = await getResponse(prompt); // Await the async function
   res.json({ response: response.join(" ") });
 });
 

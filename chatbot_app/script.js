@@ -3,7 +3,7 @@ const chatForm = document.getElementById("chat-form");
 const userInput = document.getElementById("user-input");
 
 function appendMessage(sender, text) {
-    const wrapperDiv = document.createElement("div"); // full width container per message
+    const wrapperDiv = document.createElement("div");
     wrapperDiv.classList.add("mb-2", sender.toLowerCase() === "you" ? "text-end" : "text-start");
 
     const msgDiv = document.createElement("div");
@@ -21,8 +21,6 @@ function appendMessage(sender, text) {
     chatbox.appendChild(wrapperDiv);
     chatbox.scrollTop = chatbox.scrollHeight;
 }
-   
-  
 
 document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".sample-btn").forEach(button => {
@@ -33,7 +31,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
   });
-  
 
 chatForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -62,7 +59,6 @@ chatForm.addEventListener("submit", async (e) => {
     userInput.focus();
 });
 
-// Initial bot greeting
 window.onload = () => {
     appendMessage('Bot', "Hello! I am Vicky's resume chatbot. Ask me a question!");
   };
