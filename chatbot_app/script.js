@@ -40,7 +40,7 @@ chatForm.addEventListener("submit", async (e) => {
     appendMessage("You", userText);
 
     try {
-        const res = await fetch("http://localhost:3000/chat", {
+        const res = await fetch("http://192.168.2.228:3000/chat", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
