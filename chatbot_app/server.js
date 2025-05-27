@@ -218,6 +218,8 @@ app.post('/chat', async (req, res) => {
   res.json({ response: response.join(" ") });
 });
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+const HOST = '0.0.0.0'; // use ip address to work on mobile
+
+app.listen(PORT, HOST, () => {
+  console.log(`Server is running on http://${HOST}:${PORT}`); // Now logs the actual host
 });
