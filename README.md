@@ -19,6 +19,7 @@ Improvements I could have made:
 - make the chatbot ask for clarifications (e.g programming or regular languages)
 
 Run: node server.js
+
 For mobile: 
  python3 -m  http.server 8000
  node server.js
