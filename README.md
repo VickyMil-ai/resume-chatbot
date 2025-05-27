@@ -1,6 +1,7 @@
 # resume-chatbot
 
 Front-end: HTML, JS, Bootstrap CSS
+
 Back-end: Node.js, Express
 
 Logic : uses Natural, a natural language facility of node.js. I used the tonkenizer, stemmer, WordNet, and inflector.
