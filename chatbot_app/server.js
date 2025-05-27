@@ -55,7 +55,7 @@ const responses = {
   ]
 };
 
-// some keywords for each category with weights
+// some keywords for each category with their weights
 const keywords = {
   name: {
     name: 2,
@@ -125,7 +125,9 @@ for (const category in keywords) {
     const tokens = tokenizer.tokenize(phrase.toLowerCase());
     for (const token of tokens) {
       const stem = stemmer.stem(token);
+      // choose the max weight instead of the most recent one
       stemmedKeys[category][stem] = Math.max(stemmedKeys[category][stem] || 0, weight);
+
       //console.log(stemmedKeys[category][stem]);
     }
   }
@@ -141,7 +143,7 @@ async function getSynonyms(word) {
           return;
       }
 
-      // plurar won't be recognized later
+      // plurar form won't be recognized later
       const singularWord = inflector.singularize(word);
 
       wordnet.lookup(singularWord, function(results) {
@@ -159,7 +161,7 @@ async function getSynonyms(word) {
 async function getResponse(prompt) {
   const words = tokenizer.tokenize(prompt.toLowerCase());
 
-  let wordsToScore = [...words]; // start with the original words from the prompt
+  let wordsToScore = [...words]; // ensure words remains unchanged
 
   for (const word of words) {
       const synonyms = await getSynonyms(word);
@@ -176,11 +178,11 @@ async function getResponse(prompt) {
   for (const category in stemmedKeys) {
     let score = 0;
     for (const word of stemmedWords) {
-      if (stemmedKeys[category][word]) {
-        score += stemmedKeys[category][word];
+      if (stemmedKeys[category][word]) { // find the key word in the category
+        score += stemmedKeys[category][word]; // update the score 
       }
     }
-    categoryScores[category] = score;
+    categoryScores[category] = score; // overall score of each category
     if (score > highestScore) {
       highestScore = score;
     }
@@ -188,6 +190,7 @@ async function getResponse(prompt) {
 
   const selectedResponses = [];
   const threshold = Math.max(highestScore * 0.7, 1);
+  // prevent the chatbot from focusing on less important categories
 
   for (const category in categoryScores) {
     if (categoryScores[category] >= threshold) {
