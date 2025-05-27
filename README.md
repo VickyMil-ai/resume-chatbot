@@ -22,6 +22,8 @@ Run: node server.js
 
 For mobile: 
  python3 -m  http.server 8000
+ 
  node server.js
+ 
  go to http://<ip>:8000
 
